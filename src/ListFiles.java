@@ -16,25 +16,49 @@ public class ListFiles {
 
         }
     }
-    public static ListEntry listFiles(File file){
-        List<ListEntry> list = new LinkedList<>();
+    public static List<ListEntry> listFiles(String path){
+        File file = new File(path);
 
+        if(file.isFile()){
+            return null;
+        }else{
+            // children of list entry
+            List<ListEntry> children = new LinkedList<>();
+            // get files
+            File[] childrenFiles = file.listFiles();
+            if(childrenFiles != null) {
+                // loop over files
+                for (File child : childrenFiles) {
+                    //list.add(new ListEntry(child.getName(),child.getAbsolutePath(),false,child.listFiles()));
+                    children.add(listFiles(child));
+                }
+            }
+            return children;
+        }
+    }
+    // create file tree
+    public static ListEntry listFiles(File file){
+        // if file, children is null
         if(file.isFile()){
             return new ListEntry(file.getName(),file.getAbsolutePath(),true,null);
         }else{
-            File[] children = file.listFiles();
-            for(File child:children){
-                if(child.isFile())
-                    list.add(new ListEntry(child.getName(),child.getAbsolutePath(),true));
-                else
+            // children of list entry
+            List<ListEntry> children = new LinkedList<>();
+            // get files
+            File[] childrenFiles = file.listFiles();
+            if(childrenFiles != null) {
+                // loop over files
+                for (File child : childrenFiles) {
                     //list.add(new ListEntry(child.getName(),child.getAbsolutePath(),false,child.listFiles()));
-                    list.add(listFiles(child));
+                    children.add(listFiles(child));
+                }
             }
-            return new ListEntry(file.getName(),file.getAbsolutePath(),false,list);
+            return new ListEntry(file.getName(),file.getAbsolutePath(),false,children);
         }
     }
+    // print tree
     public static void printList(ListEntry listEntry){
-
+        // if directory, loop over children
         if(listEntry.isFile)
             System.out.println(listEntry.name);
         else {
@@ -47,14 +71,15 @@ public class ListFiles {
             }
         }
     }
-    public static void buildTree(ListEntry listEntry,DefaultMutableTreeNode node){
-
+    // build tree view
+    public static void buildTree(ListEntry listEntry,DefaultMutableTreeNode parent){
+        // if directory, loop over children
         if(listEntry.isFile)
-            node.add(new DefaultMutableTreeNode(listEntry.name));
+            parent.add(new DefaultMutableTreeNode(listEntry.name));
         else {
             //print item
             DefaultMutableTreeNode dirNode = new DefaultMutableTreeNode(listEntry.name);
-            node.add(dirNode);
+            parent.add(dirNode);
             //list children
             for (int i = 0; i < listEntry.children.size(); i++) {
                 ListEntry item = listEntry.children.get(i);

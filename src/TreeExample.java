@@ -1,6 +1,7 @@
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.File;
+import java.util.List;
 
 //src: https://www.codejava.net/java-se/swing/jtree-basic-tutorial-and-examples
 public class TreeExample extends JFrame
@@ -15,8 +16,11 @@ public class TreeExample extends JFrame
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(file.getName());
 
         if(file.isDirectory()){
-            ListEntry listEntry1 = ListFiles.listFiles(file);
-            ListFiles.buildTree(listEntry1,root);
+            List<ListEntry> listEntries = ListFiles.listFiles(path);
+
+            for (int i = 0; i < listEntries.size(); i++) {
+                ListFiles.buildTree(listEntries.get(i),root);
+            }
         }
         //create the child nodes
         /*DefaultMutableTreeNode vegetableNode = new DefaultMutableTreeNode("Vegetables");
