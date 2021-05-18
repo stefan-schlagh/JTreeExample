@@ -19,7 +19,7 @@ public class TreeExample extends JFrame
     public TreeExample()
     {
 
-        System.out.println(System.getProperty("user.home"));
+        System.out.println(path);
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout());
@@ -47,6 +47,7 @@ public class TreeExample extends JFrame
 
                     File file = new File(path);
                     updateTree(file, treeMod);
+                    jtfPath.setText(path);
                 }
             }
         });
