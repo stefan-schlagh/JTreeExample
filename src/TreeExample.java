@@ -98,16 +98,16 @@ public class TreeExample extends JFrame
                     UIManager.getSystemLookAndFeelClassName());
         }
         catch (UnsupportedLookAndFeelException e) {
-            // handle exception
+            e.printStackTrace();
         }
         catch (ClassNotFoundException e) {
-            // handle exception
+            e.printStackTrace();
         }
         catch (InstantiationException e) {
-            // handle exception
+            e.printStackTrace();
         }
         catch (IllegalAccessException e) {
-            // handle exception
+            e.printStackTrace();
         }
     }
 
