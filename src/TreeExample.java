@@ -46,19 +46,7 @@ public class TreeExample extends JFrame
                     path = jfcPath.getSelectedFile().getAbsolutePath(); //Get Folderpath user choosed
 
                     File file = new File(path);
-
-                    //create the root node
-                    DefaultMutableTreeNode root2 = new DefaultMutableTreeNode(file.getName());
-                    if(file.isDirectory()){
-                        List<ListEntry> listEntries = ListFiles.listFiles(path);
-
-                        for (int i = 0; i < listEntries.size(); i++) {
-                            ListFiles.buildTree(listEntries.get(i),root2);
-                        }
-                    }
-
-                    treeMod.setRoot(root2);
-                    treeMod.reload();
+                    updateTree(file, treeMod);
                 }
             }
         });
@@ -103,11 +91,46 @@ public class TreeExample extends JFrame
         this.setVisible(true);
     }
 
+    public static void setLAF(){
+        try {
+            // Set System L&F
+            UIManager.setLookAndFeel(
+                    UIManager.getSystemLookAndFeelClassName());
+        }
+        catch (UnsupportedLookAndFeelException e) {
+            // handle exception
+        }
+        catch (ClassNotFoundException e) {
+            // handle exception
+        }
+        catch (InstantiationException e) {
+            // handle exception
+        }
+        catch (IllegalAccessException e) {
+            // handle exception
+        }
+    }
+
+    public static void updateTree(File file, DefaultTreeModel treeMod){
+        String path = file.getAbsolutePath();
+        DefaultMutableTreeNode root2 = new DefaultMutableTreeNode(file.getName());
+        if(file.isDirectory()){
+            List<ListEntry> listEntries = ListFiles.listFiles(path);
+
+            for (int i = 0; i < listEntries.size(); i++) {
+                ListFiles.buildTree(listEntries.get(i),root2);
+            }
+        }
+        treeMod.setRoot(root2);
+        treeMod.reload();
+    }
+
     public static void main(String[] args)
     {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+                setLAF();
                 new TreeExample();
             }
         });
