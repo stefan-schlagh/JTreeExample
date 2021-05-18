@@ -46,7 +46,10 @@ public class TreeExample extends JFrame
                     path = jfcPath.getSelectedFile().getAbsolutePath(); //Get Folderpath user choosed
 
                     File file = new File(path);
+                    TreeExample.this.setTitle("JTree Example - Loading...");
                     updateTree(file, treeMod);
+                    TreeExample.this.setTitle("JTree Example");
+
                     jtfPath.setText(path);
                 }
             }
@@ -57,6 +60,7 @@ public class TreeExample extends JFrame
         File file = new File(path);
 
         //create the root node
+        TreeExample.this.setTitle("JTree Example - Loading...");
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(file.getName());
         if(file.isDirectory()){
             List<ListEntry> listEntries = ListFiles.listFiles(path);
@@ -65,6 +69,7 @@ public class TreeExample extends JFrame
                 ListFiles.buildTree(listEntries.get(i),root);
             }
         }
+        TreeExample.this.setTitle("JTree Example");
         //create the child nodes
         /*DefaultMutableTreeNode vegetableNode = new DefaultMutableTreeNode("Vegetables");
         vegetableNode.add(new DefaultMutableTreeNode("Capsicum"));
