@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -69,14 +71,37 @@ public class TreeExample extends JFrame
         treeMod = new DefaultTreeModel(root);
         tree = new JTree(treeMod);
         add(new JScrollPane(tree), BorderLayout.CENTER);
-        // add selection listener
+
         tree.addTreeSelectionListener(new TreeSelectionListener() {
             @Override
-            public void valueChanged(TreeSelectionEvent e) {
+            public void valueChanged(TreeSelectionEvent event) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-                        tree.getLastSelectedPathComponent();
+                        event.getPath().getLastPathComponent();
                 TreeData treeData = (TreeData) node.getUserObject();
                 treeData.onSelected();
+            }
+        });
+
+        tree.addTreeExpansionListener(new TreeExpansionListener() {
+            @Override
+            public void treeExpanded(TreeExpansionEvent event) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+                        event.getPath().getLastPathComponent();
+                System.out.println(node);
+                if(node != null) {
+                    TreeData treeData = (TreeData) node.getUserObject();
+                    treeData.onExpanded(node);
+                }
+            }
+
+            @Override
+            public void treeCollapsed(TreeExpansionEvent event) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+                        event.getPath().getLastPathComponent();
+                if(node != null) {
+                    TreeData treeData = (TreeData) node.getUserObject();
+                    treeData.onCollapsed(node);
+                }
             }
         });
 
@@ -111,13 +136,8 @@ public class TreeExample extends JFrame
         if(file.isDirectory()){
             // get files
             File[] childrenFiles = file.listFiles();
-            if(childrenFiles != null) {
-                // loop over files
-                for (File child : childrenFiles) {
-                    // build tree
-                    ListFiles.buildTree(child,root);
-                }
-            }
+            // build tree, go 2 levels deep
+            ListFiles.buildTree(childrenFiles,root,2);
         }
         return root;
     }
