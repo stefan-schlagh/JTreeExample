@@ -24,7 +24,7 @@ public class TreeData {
     }
 
     public void onSelected() {
-        System.out.println(dump());
+        System.out.println(file.getName());
     }
 
     public void onExpanded(DefaultMutableTreeNode node) {
@@ -55,9 +55,5 @@ public class TreeData {
     @Override
     public String toString() {
         return file.getName();
-    }
-
-    public String dump(){
-        return "{name: " + file.getName() + ",loaded:" + loaded + "}";
     }
 }
