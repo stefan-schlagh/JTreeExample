@@ -1,11 +1,14 @@
 import javax.swing.*;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.List;
 
 //src: https://www.codejava.net/java-se/swing/jtree-basic-tutorial-and-examples
 public class TreeExample extends JFrame
@@ -16,6 +19,7 @@ public class TreeExample extends JFrame
     private JFileChooser jfcPath;
     private JButton btnChooseFolder;
     private String path = System.getProperty("user.home") + File.separator + "Desktop";  //Homedirectory as default
+
     public TreeExample()
     {
 
@@ -46,6 +50,7 @@ public class TreeExample extends JFrame
                     path = jfcPath.getSelectedFile().getAbsolutePath(); //Get Folderpath user choosed
 
                     File file = new File(path);
+                    // set loading text
                     TreeExample.this.setTitle("JTree Example - Loading...");
                     updateTree(file, treeMod);
                     TreeExample.this.setTitle("JTree Example");
@@ -57,41 +62,44 @@ public class TreeExample extends JFrame
         panelNorth.add(btnChooseFolder);
         add(panelNorth, BorderLayout.NORTH);
 
-        File file = new File(path);
-
         //create the root node
         TreeExample.this.setTitle("JTree Example - Loading...");
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode(file.getName());
-        if(file.isDirectory()){
-            List<ListEntry> listEntries = ListFiles.listFiles(path);
-
-            for (int i = 0; i < listEntries.size(); i++) {
-                ListFiles.buildTree(listEntries.get(i),root);
-            }
-        }
+        DefaultMutableTreeNode root = createRoot(new File(path));
         TreeExample.this.setTitle("JTree Example");
-        //create the child nodes
-        /*DefaultMutableTreeNode vegetableNode = new DefaultMutableTreeNode("Vegetables");
-        vegetableNode.add(new DefaultMutableTreeNode("Capsicum"));
-        vegetableNode.add(new DefaultMutableTreeNode("Carrot"));
-        vegetableNode.add(new DefaultMutableTreeNode("Tomato"));
-        vegetableNode.add(new DefaultMutableTreeNode("Potato"));
-        DefaultMutableTreeNode fruitNode = new DefaultMutableTreeNode("Fruits");
-        fruitNode.add(new DefaultMutableTreeNode("Banana"));
-        fruitNode.add(new DefaultMutableTreeNode("Mango"));
-        fruitNode.add(new DefaultMutableTreeNode("Apple"));
-        fruitNode.add(new DefaultMutableTreeNode("Grapes"));
-        fruitNode.add(new DefaultMutableTreeNode("Orange"));
-
-        //add the child nodes to the root node
-        root.add(vegetableNode);
-        root.add(fruitNode);*/
 
         //create the tree by passing in the root node
         treeMod = new DefaultTreeModel(root);
         tree = new JTree(treeMod);
         add(new JScrollPane(tree), BorderLayout.CENTER);
 
+        tree.addTreeSelectionListener(new TreeSelectionListener() {
+            @Override
+            public void valueChanged(TreeSelectionEvent event) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+                        event.getPath().getLastPathComponent();
+                TreeData treeData = (TreeData) node.getUserObject();
+                treeData.onSelected();
+            }
+        });
+
+        tree.addTreeExpansionListener(new TreeExpansionListener() {
+            @Override
+            public void treeExpanded(TreeExpansionEvent event) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+                        event.getPath().getLastPathComponent();
+                System.out.println(node);
+                TreeData treeData = (TreeData) node.getUserObject();
+                treeData.onExpanded(node);
+            }
+
+            @Override
+            public void treeCollapsed(TreeExpansionEvent event) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+                        event.getPath().getLastPathComponent();
+                TreeData treeData = (TreeData) node.getUserObject();
+                treeData.onCollapsed(node);
+            }
+        });
 
         this.pack();
         this.setVisible(true);
@@ -117,17 +125,21 @@ public class TreeExample extends JFrame
         }
     }
 
-    public static void updateTree(File file, DefaultTreeModel treeMod){
-        String path = file.getAbsolutePath();
-        DefaultMutableTreeNode root2 = new DefaultMutableTreeNode(file.getName());
+    public static DefaultMutableTreeNode createRoot(File file){
+        // create tree model
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode(file.getName());
+        root.setUserObject(new TreeData(file));
         if(file.isDirectory()){
-            List<ListEntry> listEntries = ListFiles.listFiles(path);
-
-            for (int i = 0; i < listEntries.size(); i++) {
-                ListFiles.buildTree(listEntries.get(i),root2);
-            }
+            // get files
+            File[] childrenFiles = file.listFiles();
+            // build tree, go 2 levels deep
+            ListFiles.buildTree(childrenFiles,root,2);
         }
-        treeMod.setRoot(root2);
+        return root;
+    }
+    public static void updateTree(File file, DefaultTreeModel treeMod){
+        DefaultMutableTreeNode root = createRoot(file);
+        treeMod.setRoot(root);
         treeMod.reload();
     }
 
