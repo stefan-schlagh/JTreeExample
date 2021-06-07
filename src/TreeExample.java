@@ -88,20 +88,16 @@ public class TreeExample extends JFrame
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode)
                         event.getPath().getLastPathComponent();
                 System.out.println(node);
-                if(node != null) {
-                    TreeData treeData = (TreeData) node.getUserObject();
-                    treeData.onExpanded(node);
-                }
+                TreeData treeData = (TreeData) node.getUserObject();
+                treeData.onExpanded(node);
             }
 
             @Override
             public void treeCollapsed(TreeExpansionEvent event) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode)
                         event.getPath().getLastPathComponent();
-                if(node != null) {
-                    TreeData treeData = (TreeData) node.getUserObject();
-                    treeData.onCollapsed(node);
-                }
+                TreeData treeData = (TreeData) node.getUserObject();
+                treeData.onCollapsed(node);
             }
         });
 
